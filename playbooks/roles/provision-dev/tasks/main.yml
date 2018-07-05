@@ -1,0 +1,67 @@
+---
+- name: Install distutils packages
+  become: yes
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - vim
+    - software-properties-common
+    - python3-pip
+    - python-pip
+    - python3.6
+    - libre2-dev
+
+- name: Install docker-ce
+  shell: |
+    set -e
+    set -x
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo apt-key fingerprint 0EBFCD88
+    sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    sudo apt update
+    sudo apt install -y docker-ce
+  retry: 3
+  args:
+    executable: /bin/bash
+
+- name: Install docker-compose
+  shell: |
+    set -e
+    set -x
+    sudo curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+    sudo chmod +x /usr/local/bin/docker-compose
+  retry: 3
+  args:
+    executable: /bin/bash
+
+- name: Add user to docker group
+  shell: |
+    set -e
+    set -x
+    sudo usermod -aG docker $USER
+  args:
+    executable: /bin/bash
+
+- name: Verify docker installation
+  shell: |
+    set -e
+    set -x
+    docker --version
+    docker-compose --version
+  args:
+    executable: /bin/bash
+
+- name: Set python3.6 as default
+  shell: |
+    set -e
+    set -x
+    echo "alias 'python=python3.6'" | tee -a ~/.bashrc
+    source ~/.bashrc
+    python --version
+  args:
+    executable: /bin/bash

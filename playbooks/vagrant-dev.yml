@@ -1,0 +1,31 @@
+---
+# Playbook for creating environment with Zuul and Gerrit
+# which is suitable for development and testing.
+#
+# It is not recommended to use this playbook as standalone,
+# because it may mess up your OS.
+#
+# Usage:
+# 1. install Vagrant and VirtualBox
+# 2. run command: vagrant up
+- hosts: all
+  vars:
+    gearman:
+      start: true
+      server: 127.0.0.1
+    gerrit:
+      server: 127.0.0.1
+      port: 29418
+      baseurl: http://127.0.0.1/gerrit/
+  gather_facts: no
+  pre_tasks:
+    # Ubuntu/bionic64 ships without python2 which causes Ansible to fail on gather_facts
+    - name: Install python2 for Ansible
+      raw: test -e /usr/bin/python || (sudo apt -y update && sudo apt install -y python-minimal)
+    # action: setup will gather facts after python2 has been installed
+    - action: setup
+  roles:
+    - provision-dev
+    - install-mariadb
+    - install-zuul
+    - run-zuul

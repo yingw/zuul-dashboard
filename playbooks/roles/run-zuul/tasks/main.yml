@@ -1,0 +1,8 @@
+---
+- name: Run zuul-scheduler
+  become: yes
+  shell: zuul-scheduler
+
+- name: Run zuul-executor
+  become: yes
+  shell: zuul-executor

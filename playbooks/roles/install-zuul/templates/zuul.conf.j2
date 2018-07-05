@@ -1,0 +1,16 @@
+[scheduler]
+tenant_config=/etc/zuul/main.yaml
+
+[gearman_server]
+start={{ gearman.start }}
+
+[gearman]
+server={{ gearman.server }}
+
+[connection my_gerrit]
+driver=gerrit
+server={{ gerrit.server }}
+port={{ gerrit.port }}
+baseurl={{ gerrit.baseurl }}
+user=zuul
+sshkey=/home/zuul/.ssh/id_rsa
