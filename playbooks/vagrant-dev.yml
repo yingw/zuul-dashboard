@@ -17,6 +17,8 @@
       server: 127.0.0.1
       port: 29418
       baseurl: http://127.0.0.1/gerrit/
+    mariadb:
+      migrate: true
   gather_facts: no
   pre_tasks:
     # Ubuntu/bionic64 ships without python2 which causes Ansible to fail on gather_facts
@@ -26,6 +28,6 @@
     - action: setup
   roles:
     - provision-dev
-    - install-mariadb
-    - install-zuul
+    - run-mariadb
+    - run-gerrit
     - run-zuul

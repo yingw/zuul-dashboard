@@ -1,0 +1,66 @@
+---
+- name: Create Gerrit user
+  become: yes
+  user:
+    name: gerrit
+    state: present
+    generate_ssh_key: yes
+
+- name: Create directories for gerrit
+  become: yes
+  become_user: gerrit
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - ~/gerrit
+    - ~/gerrit/etc
+    - ~/gerrit/git
+    - ~/gerrit/db
+    - ~/gerrit/index
+    - ~/gerrit/cache
+    - ~/gerrit/postgres
+    - ~/gerrit/ldap
+    - ~/gerrit/ldap/var
+    - ~/gerrit/ldap/etc
+
+- name: Copy gerrit-compose.yaml file
+  become: yes
+  become_user: gerrit
+  copy:
+    src: gerrit-compose.yaml
+    dest: ~/gerrit/docker-compose.yaml
+
+- name: Run postgres container for gerrit
+  become: yes
+  shell: |
+    set -e
+    set -x
+    docker-compose up -d postgres
+  args:
+    executable: /bin/bash
+    chdir: /home/gerrit/gerrit
+
+- name: Wait until postgres comes up (naive)
+  pause:
+    seconds: 10
+
+- name: Run gerrit container for initialize step
+  become: yes
+  shell: |
+    set -e
+    set -x
+    docker-compose up gerrit
+  args:
+    executable: /bin/bash
+    chdir: /home/gerrit/gerrit
+
+- name: Run gerrit container in daemon mode
+  become: yes
+  shell: |
+    set -e
+    set -x
+    docker-compose up -d
+  args:
+    executable: /bin/bash
+    chdir: /home/gerrit/gerrit

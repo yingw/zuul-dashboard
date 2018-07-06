@@ -1,0 +1,37 @@
+---
+- name: Create MariaDB user
+  become: yes
+  user:
+    name: mariadb
+    state: present
+
+- name: Run mariadb container
+  become: yes
+  shell: |
+    set -e
+    set -x
+    docker run -d --name buildset_history -e MYSQL_ROOT_PASSWORD=root mariadb:10.3
+  args:
+    executable: /bin/bash
+
+- name: Wait until MariaDB comes up (naive)
+  pause:
+    seconds: 10
+
+- name: Copy sqldump with examples
+  become: yes
+  become_user: mariadb
+  copy:
+    src: zuul.sql
+    dest: /home/mariadb/zuul.sql
+  when: mariadb.migrate == true
+
+- name: Import database from zuul.sql dump file
+  become: yes
+  shell: |
+    set -e
+    set -x
+    docker exec -i buildset_history mysql -proot -u root < /home/mariadb/zuul.sql
+  args:
+    executable: /bin/bash
+  when: mariadb.migrate == true

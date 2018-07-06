@@ -1,4 +1,43 @@
----
+- name: Create Zuul user
+  become: yes
+  user:
+    name: zuul
+    state: present
+    generate_ssh_key: yes
+
+- name: Install Zuul
+  become: yes
+  pip:
+    name: zuul
+    state: present
+    executable: pip3
+
+- name: Create /etc/zuul directory
+  become: yes
+  file:
+    path: /etc/zuul
+    state: directory
+    mode: a+rw
+
+- name: Create /var/run/zuul directory
+  become: yes
+  file:
+    path: /var/run/zuul
+    state: directory
+    mode: a+rw
+
+- name: Copy zuul.conf file
+  become: yes
+  template:
+    src: zuul.conf.j2
+    dest: /etc/zuul/zuul.conf
+
+- name: Copy main.yaml file
+  become: yes
+  template:
+    src: main.yaml.j2
+    dest: /etc/zuul/main.yaml
+
 - name: Run zuul-scheduler
   become: yes
   shell: zuul-scheduler
