@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import configparser
 import os
+from configparser import ConfigParser, ExtendedInterpolation
 
-config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
+config = ConfigParser(interpolation=ExtendedInterpolation())
 config.read(os.path.normpath(os.getenv('SETTINGS_PATH')))
