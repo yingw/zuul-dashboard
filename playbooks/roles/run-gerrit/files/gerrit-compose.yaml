@@ -12,11 +12,11 @@ services:
       - postgres
       - ldap
     volumes:
-     - /home/gerrit/gerrit/etc:/var/gerrit/etc
-     - /home/gerrit/gerrit/git:/var/gerrit/git
-     - /home/gerrit/gerrit/index:/var/gerrit/index
-     - /home/gerrit/gerrit/cache:/var/gerrit/cache
-#    entrypoint: java -jar /var/gerrit/bin/gerrit.war init -d /var/gerrit
+      - /home/vagrant/gerrit/etc:/var/gerrit/etc
+      - /home/vagrant/gerrit/git:/var/gerrit/git
+      - /home/vagrant/gerrit/index:/var/gerrit/index
+      - /home/vagrant/gerrit/cache:/var/gerrit/cache
+    entrypoint: java -jar /var/gerrit/bin/gerrit.war init -d /var/gerrit
 
   postgres:
     image: postgres:9.6
@@ -25,7 +25,7 @@ services:
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=reviewdb
     volumes:
-      - /home/gerrit/gerrit/postgres:/var/lib/postgresql/data
+      - /home/vagrant/gerrit/postgres:/var/lib/postgresql/data
 
   ldap:
     image: osixia/openldap
@@ -35,8 +35,8 @@ services:
     environment:
       - LDAP_ADMIN_PASSWORD=secret
     volumes:
-      - /home/gerrit/gerrit/ldap/var:/var/lib/ldap
-      - /home/gerrit/gerrit/ldap/etc:/etc/ldap/slapd.d
+      - /home/vagrant/gerrit/ldap/var:/var/lib/ldap
+      - /home/vagrant/gerrit/ldap/etc:/etc/ldap/slapd.d
 
   ldap-admin:
     image: osixia/phpldapadmin

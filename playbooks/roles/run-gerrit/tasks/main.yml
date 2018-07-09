@@ -1,35 +1,45 @@
 ---
-- name: Create Gerrit user
-  become: yes
-  user:
-    name: gerrit
-    state: present
-    generate_ssh_key: yes
+- name: Set gerrit home
+  set_fact:
+    gerrit_home: /home/vagrant/gerrit
 
 - name: Create directories for gerrit
-  become: yes
-  become_user: gerrit
   file:
-    path: "{{ item }}"
+    path: "{{ gerrit_home }}/{{ item }}"
     state: directory
+    recurse: true
   with_items:
-    - ~/gerrit
-    - ~/gerrit/etc
-    - ~/gerrit/git
-    - ~/gerrit/db
-    - ~/gerrit/index
-    - ~/gerrit/cache
-    - ~/gerrit/postgres
-    - ~/gerrit/ldap
-    - ~/gerrit/ldap/var
-    - ~/gerrit/ldap/etc
+    - etc
+    - git
+    - db
+    - index
+    - cache
+    - postgres
+    - ldap/var
+    - ldap/etc
+
+- name: Copy Gerrit configuration
+  copy:
+    src: "{{ item }}"
+    dest: "{{ gerrit_home }}/etc/{{ item }}"
+  with_items:
+    - gerrit.config
+    - secure.config
+
+- name: Generate Gerrit host key
+  shell: "ssh-keygen -q -t rsa -f {{ gerrit_home }}/etc/ssh_host_key -N ''"
+
+- name: Permission debug
+  become: true
+  file:
+    path: "{{ gerrit_home }}"
+    mode: u=rwX,g=rwX,o=rwX
+    recurse: true
 
 - name: Copy gerrit-compose.yaml file
-  become: yes
-  become_user: gerrit
   copy:
     src: gerrit-compose.yaml
-    dest: ~/gerrit/docker-compose.yaml
+    dest: "{{ gerrit_home }}/docker-compose.yaml"
 
 - name: Run postgres container for gerrit
   become: yes
@@ -39,13 +49,13 @@
     docker-compose up -d postgres
   args:
     executable: /bin/bash
-    chdir: /home/gerrit/gerrit
+    chdir: "{{ gerrit_home }}"
 
 - name: Wait until postgres comes up (naive)
   pause:
     seconds: 10
 
-- name: Run gerrit container for initialize step
+- name: Initialize Gerrit container
   become: yes
   shell: |
     set -e
@@ -53,7 +63,13 @@
     docker-compose up gerrit
   args:
     executable: /bin/bash
-    chdir: /home/gerrit/gerrit
+    chdir: "{{ gerrit_home }}"
+
+- name: Remove init entrypoint for Gerrit
+  lineinfile:
+    path: "{{ gerrit_home }}/docker-compose.yaml"
+    state: absent
+    regexp: "entrypoint"
 
 - name: Run gerrit container in daemon mode
   become: yes
@@ -63,4 +79,4 @@
     docker-compose up -d
   args:
     executable: /bin/bash
-    chdir: /home/gerrit/gerrit
+    chdir: "{{ gerrit_home }}"
