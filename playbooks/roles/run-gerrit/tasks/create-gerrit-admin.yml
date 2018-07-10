@@ -1,0 +1,23 @@
+---
+- name: Install python-ldap for Ansible
+  become: yes
+  apt:
+    name: python-ldap
+    state: present
+
+- name: Create ldap entry for gerrit admin account
+  become: yes
+  ldap_entry:
+    server_uri: ldap://
+    bind_dn: cn=admin,dc=example,dc=org
+    bind_pw: secret
+    state: present
+    dn: cn=gerritadmin,dc=example,dc=org
+    objectClass: inetOrgPerson
+    attributes:
+      uid: "{{ gerrit.admin.username }}"
+      userPassword: "{{ gerrit.admin.password }}"
+      mail: "{{ gerrit.admin.email }}"
+      givenName: Gerrit
+      sn: Admin
+      cn: gerritadmin

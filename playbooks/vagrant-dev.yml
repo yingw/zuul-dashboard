@@ -16,7 +16,12 @@
     gerrit:
       server: 127.0.0.1
       port: 29418
-      baseurl: http://127.0.0.1/gerrit/
+      baseurl: http://127.0.0.1/
+      create_admin: true
+      admin:
+        username: "gerritadmin"
+        password: "secret"
+        email: "gerritadmin@localdomain"
     mariadb:
       migrate: true
   gather_facts: no

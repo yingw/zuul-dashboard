@@ -5,7 +5,7 @@ services:
     image: gerritcodereview/gerrit
     ports:
       - "29418:29418"
-      - "80:8080"
+      - "8080:8080"
     links:
       - postgres
     depends_on:
