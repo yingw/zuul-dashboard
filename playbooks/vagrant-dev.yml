@@ -24,6 +24,11 @@
         email: "gerritadmin@localdomain"
     mariadb:
       migrate: true
+    dashboard:
+      path: /opt/app
+      settings: /opt/app/settings.conf
+      app: /opt/app/app.py
+      port: 80
   gather_facts: no
   pre_tasks:
     # Ubuntu/bionic64 ships without python2 which causes Ansible to fail on gather_facts
@@ -36,3 +41,4 @@
     - run-mariadb
     - run-gerrit
     - run-zuul
+    - dashboard-dev

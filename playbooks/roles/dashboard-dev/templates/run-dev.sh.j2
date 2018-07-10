@@ -1,0 +1,9 @@
+#!/bin/bash
+
+source ~/dashboard-venv/bin/activate
+
+export SETTINGS_PATH={{ dashboard.settings }}
+export FLASK_ENV=development
+export FLASK_APP={{ dashboard.app }}
+
+flask run --port {{ dashboard.port }}

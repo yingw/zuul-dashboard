@@ -1,0 +1,25 @@
+---
+- name: Install python3-venv package
+  become: yes
+  apt:
+    name: python3-venv
+
+- name: Create virtualenv for project
+  shell: python3 -m venv ~/.venv
+  args:
+    executable: /bin/bash
+
+- name: Install dependencies for dashboard
+  shell: |
+    source ~/.venv/bin/activate
+    make clean
+    make install-dev
+  args:
+    chdir: "{{ dashboard.path }}"
+    executable: /bin/bash
+
+- name: Prepare run-dev script
+  template:
+    src: run-dev.sh.j2
+    dest: ~/run-dev.sh
+    mode: u+rwx,g+r
