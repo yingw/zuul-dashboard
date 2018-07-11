@@ -2,3 +2,5 @@
 - include_tasks: run-gerrit.yml
 - include_tasks: create-gerrit-admin.yml
   when: gerrit.create_admin == true
+- include_tasks: create-default-project.yml
+  when: gerrit.create_project == true

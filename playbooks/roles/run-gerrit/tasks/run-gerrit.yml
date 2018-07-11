@@ -27,7 +27,14 @@
     - secure.config
 
 - name: Generate Gerrit host key
-  shell: "ssh-keygen -q -t rsa -f {{ gerrit_home }}/etc/ssh_host_key -N ''"
+  shell: |
+    set -e
+    set -x
+    yes | ssh-keygen -t rsa -N '' -f {{ gerrit_home }}/etc/ssh_host_key
+    cat {{ gerrit_home }}/etc/ssh_host_key.pub | tee --append ~/.ssh/authorized_keys
+    chmod 600 {{ gerrit_home }}/etc/ssh_host_key
+  args:
+    executable: /bin/bash
 
 - name: Permission debug
   become: true

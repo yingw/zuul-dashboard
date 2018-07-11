@@ -21,3 +21,15 @@
       givenName: Gerrit
       sn: Admin
       cn: gerritadmin
+
+- name: Read ssh key for manual usage.
+  shell: cat ~/.ssh/id_rsa.pub
+  register: user_ssh_key
+
+- name: Add ssh key to gerritadmin at http://10.10.10.5:8080/#/settings/ssh-keys
+  debug:
+    msg: {{ user_ssh_key.stdout }}
+
+- pause:
+    echo: no
+    prompt: Press enter when done to continue.

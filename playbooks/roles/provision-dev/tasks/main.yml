@@ -16,6 +16,17 @@
     - python3.6
     - libre2-dev
 
+- name: Create ssh key and add to authorized_key for vagrant user
+  shell: |
+    set -e
+    set -x
+    yes | ssh-keygen -t rsa -N '' -f ~/.ssh/id_rsa
+    cat ~/.ssh/id_rsa.pub | tee --append ~/.ssh/authorized_keys
+    chmod 700 ~/.ssh
+    chmod 600 ~/.ssh/id_rsa ~/.ssh/authorized_keys
+  args:
+    executable: /bin/bash
+
 - name: Install docker-ce
   shell: |
     set -e

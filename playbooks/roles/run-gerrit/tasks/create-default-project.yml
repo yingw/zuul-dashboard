@@ -1,0 +1,6 @@
+---
+- name: Create default gerrit project
+  shell: |
+    ssh -p 29418 gerritadmin@127.0.0.1 gerrit ls-projects
+  args:
+    executable: /bin/bash

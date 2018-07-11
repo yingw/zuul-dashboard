@@ -17,6 +17,7 @@
       server: 127.0.0.1
       port: 29418
       baseurl: http://127.0.0.1/
+      create_project: true
       create_admin: true
       admin:
         username: "gerritadmin"
