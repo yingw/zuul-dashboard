@@ -28,7 +28,8 @@
       path: /opt/app
       settings: /opt/app/settings.conf
       app: /opt/app/app.py
-      port: 80
+      # in development port must be 3000 or higher
+      port: 3000
   gather_facts: no
   pre_tasks:
     # Ubuntu/bionic64 ships without python2 which causes Ansible to fail on gather_facts
