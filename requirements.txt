@@ -6,3 +6,5 @@ MarkupSafe==1.0
 Werkzeug==0.14.1
 pony==0.7.3
 accepts==1.0.4
+requests==2.19.1
+PyMySQL==0.9.2

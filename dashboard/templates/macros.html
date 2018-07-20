@@ -1,9 +1,9 @@
-{% macro show_none(object) %}
-{% if not object %}
-    N/A
-{% else %}
-    {{ object }}
-{% endif %}
+{% macro show_object_or_na(object) %}
+    {% if not object %}
+        N/A
+    {% else %}
+        {{ object }}
+    {% endif %}
 {% endmacro %}
 
 {% macro show_pagination(paginator) %}
@@ -38,4 +38,60 @@
         {% endif %}
     </ul>
 </nav>
+{% endmacro %}
+
+{% macro show_yes_no(object) %}
+    {% if object %}
+        YES
+    {% else %}
+        NO
+    {% endif %}
+{% endmacro %}
+
+{% macro buildset_progress(buildset) %}
+    {% for job in buildset.jobs %}
+        {% if job.result == 'SUCCESS' %}
+            <div class="progress-bar bg-success bg-full" role="progressbar" title="{{ job.name }}" style="width:{{ buildset.progress }}%"></div>
+        {% elif job.result == 'FAILURE' %}
+            <div class="progress-bar bg-danger" role="progressbar" title="{{ job.name }}" style="width:{{ buildset.progress }}%"></div>
+        {% elif job.result == 'POST_FAILURE' %}
+            <div class="progress-bar bg-warning" role="progressbar" title="{{ job.name }}" style="width:{{ buildset.progress }}%"></div>
+        {% elif job.result == 'RETRY_LIMIT' %}
+            <div class="progress-bar bg-warning" role="progressbar" title="{{ job.name }}" style="width:{{ buildset.progress }}%"></div>
+        {% elif job.result %}
+            <div class="progress-bar" role="progressbar" title="{{ job.name }}" style="width:{{ buildset.progress }}%"></div>
+        {% elif job.time_tracker.start %}
+            <div class="progress-bar bg-info" role="progressbar" title="{{ job.name }}" style="width:{{ buildset.progress * job.progress / 100}}%"></div>
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% macro job_progress(job) %}
+    {% if job.time_tracker.start %}
+        {% if job.result == 'SUCCESS' %}
+            <div class="progress-bar bg-success bg-full" role="progressbar">success</div>
+        {% elif job.result == 'FAILURE' %}
+            <div class="progress-bar bg-danger bg-full" role="progressbar">failure</div>
+        {% elif job.result %}
+            <div class="progress-bar bg-warning bg-full" role="progressbar">{{ job.result }}</div>
+        {% else %}
+            <div class="progress-bar bg-info" role="progressbar" style="width:{{ job.progress }}%"></div>
+        {% endif %}
+    {% else %}
+        {% if job.result %}
+            <div class="progress-bar bg-full" role="progressbar">{{ job.result }}</div>
+        {% else %}
+            <div class="progress-bar bg-secondary bg-full" role="progressbar">queued</div>
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
+{% macro buildset_status(buildset) %}
+    {% if buildset.status == 'Succeeding'%}
+       <span class="badge badge-success" title="Succeeding">Succeeding</span>
+    {% elif buildset.status == 'Failing' %}
+        <span class="badge badge-danger" title="Failed because at least one job failed">Failing</span>
+    {% else %}
+        <span class="badge badge-secondary" title="Dependent change required for testing">Enqueued</span>
+    {% endif %}
 {% endmacro %}
